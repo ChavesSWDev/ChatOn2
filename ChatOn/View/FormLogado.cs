@@ -7,6 +7,7 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -188,16 +189,35 @@ namespace ChatOn.View
             // Retrieve the latest chat data from the database
             Chat updatedChat = UsuarioController.GetChat(usuario, selectedUser);
 
+            // Store the previous message count
+            int previousMessageCount = currentChat.Messages.Count;
+
             // Update the current chat with the latest data
             currentChat.Messages = updatedChat.Messages;
+
+            // Store the current scroll position
+            int scrollPosition = txtChat.GetPositionFromCharIndex(txtChat.SelectionStart).Y;
 
             // Update the txtChat with the refreshed chat data
             StringBuilder chatLog = new StringBuilder();
             foreach (Message message in currentChat.Messages)
             {
-                chatLog.AppendLine($"{message.Sender.NomeUsuario}: {message.Content}");
+                chatLog.AppendLine($"{message.Sender.NomeUsuario}: {message.Content} [{message.Timestamp.ToString("HH:mm:ss")}]");
             }
-            txtChat.Text = chatLog.ToString();
+            string newText = chatLog.ToString();
+
+            // Determine if new messages have been added
+            bool newMessagesAdded = currentChat.Messages.Count > previousMessageCount;
+
+            // Update the text of the txtChat
+            txtChat.Text = newText;
+
+            // Scroll to the bottom if new messages have been added
+            if (newMessagesAdded)
+            {
+                txtChat.SelectionStart = txtChat.Text.Length;
+                txtChat.ScrollToCaret();
+            }
         }
 
         private void btnEnviarMsg_Click(object sender, EventArgs e)
@@ -206,13 +226,13 @@ namespace ChatOn.View
 
             if (string.IsNullOrEmpty(message))
             {
-                MessageBox.Show("Por favor, digite uma mensagem válida.");
+                MessageBox.Show("Please enter a valid message.");
                 return;
             }
 
             if (selectedUser == null)
             {
-                MessageBox.Show("Por favor, selecione um amigo para enviar a mensagem.");
+                MessageBox.Show("Please select a friend to send the message to.");
                 return;
             }
 
@@ -237,8 +257,14 @@ namespace ChatOn.View
             UsuarioController.SaveChat(chat);
 
             // Update the txtChat with the new message
-            txtChat.AppendText(loggedUser.NomeUsuario + ": " + message + Environment.NewLine);
+            txtChat.AppendText(loggedUser.NomeUsuario + ": " + message + " [" + newMessage.Timestamp.ToString("HH:mm:ss") + "] " + Environment.NewLine);
+
+            // Scroll to the bottom of the chat
+            txtChat.SelectionStart = txtChat.Text.Length;
+            txtChat.ScrollToCaret();
+
             txtMsgDigitada.Text = "";
+            txtMsgDigitada.Focus();
         }
 
         public FormLogado(Panel panel)
