@@ -10,6 +10,8 @@ using System.Net.Mail;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System;
+using System.Security.Cryptography;
 
 namespace ChatOn.View
 {
@@ -115,7 +117,7 @@ namespace ChatOn.View
             Usuarios novoUser = new Usuarios();
             novoUser.Email = txtEmail.Text.Trim();
             novoUser.Login = txtUsername.Text.Trim();
-            novoUser.Senha = txtSenha.Text.Trim();
+            novoUser.Senha = CriptografarSenha(txtSenha.Text.Trim());
             novoUser.NomeUsuario = txtUsername.Text.Trim();
 
             // Retrieve the image from the PictureBox in the MainForm
@@ -135,7 +137,7 @@ namespace ChatOn.View
             }
             else
             {
-                string defaultImagePath = "Y:\\TomanoNoturnoADS\\ChatOn\\ChatOn\\Images\\defaultUserImg.png";
+                string defaultImagePath = @"Y:\TomanoNoturnoADS\Dev Sistemas - Tiago\ChatOn2-master\ChatOn\Images\defaultUserImg.png";
 
 
                 // Get the full path to the default image
@@ -212,6 +214,26 @@ namespace ChatOn.View
                     MessageBox.Show(ex.Message);
                 }
             }
+
+        }
+        private string CriptografarSenha(string senha)
+        {
+            using (SHA256 sha256Hash = SHA256.Create())
+            {
+                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(senha));
+
+                StringBuilder builder = new StringBuilder();
+                for (int i = 0; i < bytes.Length; i++)
+                {
+                    builder.Append(bytes[i].ToString("x2"));
+                }
+                return builder.ToString();
+            }
+        }
+        private bool VerificarSenha(string senhaDigitada, string senhaArmazenada)
+        {
+            string senhaCriptografada = CriptografarSenha(senhaDigitada);
+            return senhaCriptografada == senhaArmazenada;
         }
 
         private Image ResizeImage(Image image, Size size)

@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO;
 using System.Drawing;
-
+using System.Security.Cryptography;
 namespace ChatOn.View
 {
     public partial class FormEscolhaCadLog : Form
@@ -94,7 +94,7 @@ namespace ChatOn.View
             // Consultar o banco de dados para verificar se as credenciais de login são válidas
             Usuarios usuario = UsuarioController.Context.Usuario.FirstOrDefault(u => (u.Email == login || u.Login == login) && u.Senha == senha);
 
-            if (usuario != null)
+            if (usuario != null && VerificarSenha(senha, usuario.Senha))
             {
                 loggedInUser = usuario;
 
@@ -126,6 +126,27 @@ namespace ChatOn.View
                 txtSenha.Text = "";
             }
         }
+
+        private string CriptografarSenha(string senha)
+        {
+            using (SHA256 sha256Hash = SHA256.Create())
+            {
+                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(senha));
+
+                StringBuilder builder = new StringBuilder();
+                for (int i = 0; i < bytes.Length; i++)
+                {
+                    builder.Append(bytes[i].ToString("x2"));
+                }
+                return builder.ToString();
+            }
+        }
+        private bool VerificarSenha(string senhaDigitada, string senhaArmazenada)
+        {
+            string senhaCriptografadaDigitada = CriptografarSenha(senhaDigitada);
+            return senhaCriptografadaDigitada == senhaArmazenada;
+        }
+
 
         public void ShowButtons()
         {
