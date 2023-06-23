@@ -10,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using System.Security.Cryptography;
 
 namespace ChatOn.View
 {
@@ -35,7 +36,7 @@ namespace ChatOn.View
 
             lblNomeUserLogado.Text = nomeUserLogado;
             lblEmailUserLogado.Text = emailUserLogado;
-            lblSenhaUserLogado.Text = senhaUserLogado;
+            lblSenhaUserLogado.Text = "**************";
 
             byte[] imageData = UsuarioController.GetImagem(loginUserLogado);
             if (imageData != null)
@@ -216,16 +217,34 @@ namespace ChatOn.View
 
             try
             {
-                UsuarioController.AtualizarSenha(loginUserLogado, novaSenha);
+                string senhaCriptografada = CriptografarSenha(novaSenha); // Encrypt the new password
+
+                UsuarioController.AtualizarSenha(loginUserLogado, senhaCriptografada); // Save the encrypted password in the database
+
                 MessageBox.Show("Senha atualizada com sucesso!");
 
-                lblSenhaUserLogado.Text = novaSenha;
+                lblSenhaUserLogado.Text = "**************";
 
                 Refresh();
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
+            }
+        }
+
+        private string CriptografarSenha(string senha)
+        {
+            using (SHA256 sha256Hash = SHA256.Create())
+            {
+                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(senha));
+
+                StringBuilder builder = new StringBuilder();
+                for (int i = 0; i < bytes.Length; i++)
+                {
+                    builder.Append(bytes[i].ToString("x2"));
+                }
+                return builder.ToString();
             }
         }
 

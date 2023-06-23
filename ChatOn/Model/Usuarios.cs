@@ -29,6 +29,9 @@ namespace ChatOn.Model
         public byte[] ImagemPerfil { get; set; }
 
         public int FriendRequestCount { get; set; }
+
+        public bool HasUnreadMessages { get; set; }
+
         // Navigation property representing the friends of the user
         public virtual ICollection<Usuarios> Amigos { get; set; }
 
@@ -37,7 +40,6 @@ namespace ChatOn.Model
 
         // Navigation property representing the chats the user is involved in
         public virtual ICollection<Chat> Chats { get; set; }
-
 
         public Usuarios()
         {
@@ -52,8 +54,13 @@ namespace ChatOn.Model
         public int Id { get; set; }
         public int User1Id { get; set; }
         public int User2Id { get; set; }
+
+        [ForeignKey("User1Id")]
         public Usuarios User1 { get; set; }
+
+        [ForeignKey("User2Id")]
         public Usuarios User2 { get; set; }
+
         public List<Message> Messages { get; set; }
 
         public Chat(Usuarios user1, Usuarios user2)
@@ -73,6 +80,10 @@ namespace ChatOn.Model
     public class Message
     {
         public int Id { get; set; }
+
+        [ForeignKey("Sender")]
+        public int SenderId { get; set; }
+
         public Usuarios Sender { get; set; }
         public string Content { get; set; }
         public DateTime Timestamp { get; set; }

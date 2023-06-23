@@ -125,6 +125,8 @@ namespace ChatOn.View
             }
         }
 
+
+
         public SplitContainer SplitContainer1
         {
             get { return splitContainer1; }
@@ -138,6 +140,11 @@ namespace ChatOn.View
         public PictureBox UserImage
         {
             get { return picBoxUserIMG; }
+        }
+
+        public PictureBox PicLogo
+        {
+            get { return picBoxLogo; }
         }
 
         public Button BtnConfiguracoes
@@ -155,6 +162,11 @@ namespace ChatOn.View
             get { return btnIniciar; }
         }
 
+        public Button BtnAddAmigos
+        {
+            get { return btnAddAmigos; }
+        }
+
         public Button BtnDeslogar
         {
             get { return btnDeslogar; }
@@ -165,7 +177,7 @@ namespace ChatOn.View
             get { return panel2; }
         }
 
-        private Form activeForm = null;
+        public Form activeForm = null;
 
         private void btnIniciar_Click(object sender, EventArgs e)
         {

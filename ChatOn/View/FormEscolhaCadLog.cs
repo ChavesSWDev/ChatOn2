@@ -92,7 +92,7 @@ namespace ChatOn.View
             string senha = txtSenha.Text;
 
             // Consultar o banco de dados para verificar se as credenciais de login são válidas
-            Usuarios usuario = UsuarioController.Context.Usuario.FirstOrDefault(u => (u.Email == login || u.Login == login) && u.Senha == senha);
+            Usuarios usuario = UsuarioController.Context.Usuario.FirstOrDefault(u => (u.Email == login || u.Login == login) && u.Senha == CriptografarSenha(senha));
 
             if (usuario != null && VerificarSenha(senha, usuario.Senha))
             {

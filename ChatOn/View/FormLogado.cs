@@ -35,6 +35,7 @@ namespace ChatOn.View
         private Usuarios selectedUser;
         private List<Usuarios> friendList;
         private Panel panel;
+        private List<Usuarios> usersList;
 
         public FormLogado(FormMenu parentForm)
         {
@@ -49,6 +50,7 @@ namespace ChatOn.View
         public FormLogado(FormMenu parentForm, Usuarios usuario)
         {
             InitializeComponent();
+            usersList = new List<Usuarios> { usuario };
             btnEnviarMsg.Enabled = false;
             txtMsgDigitada.Enabled = false;
             txtChat.Visible = false;
@@ -56,7 +58,10 @@ namespace ChatOn.View
             chatRefreshTimer.Interval = 1000;
             chatRefreshTimer.Tick += (sender, e) =>
             {
-                RefreshChat();
+                if (!txtChat.Focused)
+                {
+                    RefreshChat();
+                }
             };
 
 
@@ -112,14 +117,23 @@ namespace ChatOn.View
         private Chat currentChat;
         private void CreateTableLayoutForFriend(Usuarios friend)
         {
-            // Check if a table layout already exists for the friend
+            if (!FriendRequestAccepted(friend))
+            {
+                return;
+            }
+
             TableLayoutPanel existingTableLayout = GetTableLayoutForFriend(friend);
             if (existingTableLayout != null)
             {
-                return; // Return early if table layout already exists
+                return;
             }
 
-            // Create a new TableLayoutPanel for the friend's data
+            // Check if the friend is the logged-in user
+            if (friend.Id == usuario.Id)
+            {
+                return;
+            }
+
             TableLayoutPanel tableLayout = new TableLayoutPanel();
             tableLayout.AutoSize = true;
             tableLayout.ColumnCount = 2;
@@ -149,7 +163,7 @@ namespace ChatOn.View
             }
 
             Label lblNomeAmigo = new Label();
-            lblNomeAmigo.Text = friend.NomeUsuario;
+            lblNomeAmigo.Text = friend.NomeUsuario + (friend.HasUnreadMessages ? " (!)" : "");
             lblNomeAmigo.Size = new Size(85, 23);
             lblNomeAmigo.TextAlign = ContentAlignment.MiddleLeft;
             tableLayout.Controls.Add(lblNomeAmigo, 1, 0);
@@ -159,6 +173,8 @@ namespace ChatOn.View
             {
                 // Store the selected user
                 selectedUser = friend;
+                lblNomeAmigo.Text = friend.NomeUsuario;
+                friend.HasUnreadMessages = false;
 
                 // Open the chat between the logged-in user and the selected user
                 currentChat = UsuarioController.GetChat(usuario, selectedUser);
@@ -176,7 +192,31 @@ namespace ChatOn.View
                 btnEnviarMsg.Enabled = true;
                 txtMsgDigitada.Enabled = true;
                 txtChat.Visible = true;
+                RefreshFriendList();
             };
+        }
+
+        private void RefreshFriendList()
+        {
+            listBoxAmigos.Items.Clear();
+
+            foreach (var friend in friendList)
+            {
+                listBoxAmigos.Items.Add(friend.NomeUsuario + (friend.HasUnreadMessages ? " (!)" : ""));
+            }
+        }
+
+
+        private bool FriendRequestAccepted(Usuarios friend)
+        {
+            // Find the logged-in user
+            Usuarios loggedInUser = usersList.FirstOrDefault(u => u.Login == usuario.Login);
+
+            // Check if the friend request has been accepted by both users
+            bool isAccepted = loggedInUser?.Amigos.Any(u => u.Id == friend.Id) ?? false;
+            bool isFriend = friend.Amigos.Any(u => u.Id == loggedInUser.Id);
+
+            return isAccepted && isFriend;
         }
 
         private void RefreshChat()
@@ -198,23 +238,44 @@ namespace ChatOn.View
             // Store the current scroll position
             int scrollPosition = txtChat.GetPositionFromCharIndex(txtChat.SelectionStart).Y;
 
+            // Determine if new messages have been added
+            bool newMessagesAdded = currentChat.Messages.Count > previousMessageCount;
+
             // Update the txtChat with the refreshed chat data
             StringBuilder chatLog = new StringBuilder();
-            foreach (Message message in currentChat.Messages)
+            for (int i = 0; i < currentChat.Messages.Count; i++)
             {
-                chatLog.AppendLine($"{message.Sender.NomeUsuario}: {message.Content} [{message.Timestamp.ToString("HH:mm:ss")}]");
+                Message message = currentChat.Messages[i];
+                string senderName;
+                if (message.Sender == usuario)
+                {
+                    senderName = "Eu";
+                }
+                else
+                {
+                    senderName = message.Sender.NomeUsuario;
+                }
+
+                chatLog.AppendLine(senderName + ": " + message.Content + " [" + message.Timestamp.ToString("HH:mm:ss") + "]");
+
+                // Add a newline if it's not the last message
+                if (i < currentChat.Messages.Count - 1)
+                {
+                    chatLog.AppendLine();
+                }
             }
             string newText = chatLog.ToString();
 
-            // Determine if new messages have been added
-            bool newMessagesAdded = currentChat.Messages.Count > previousMessageCount;
+
 
             // Update the text of the txtChat
             txtChat.Text = newText;
 
             // Scroll to the bottom if new messages have been added
-            if (newMessagesAdded)
+            if (newMessagesAdded && friendList.Contains(selectedUser))
             {
+                selectedUser.HasUnreadMessages = true;
+                RefreshFriendList(); // Update the friend list display
                 txtChat.SelectionStart = txtChat.Text.Length;
                 txtChat.ScrollToCaret();
             }
@@ -257,7 +318,7 @@ namespace ChatOn.View
             UsuarioController.SaveChat(chat);
 
             // Update the txtChat with the new message
-            txtChat.AppendText(loggedUser.NomeUsuario + ": " + message + " [" + newMessage.Timestamp.ToString("HH:mm:ss") + "] " + Environment.NewLine);
+            txtChat.AppendText("Eu" + ":" + message + " [" + newMessage.Timestamp.ToString("HH:mm:ss") + "] " + Environment.NewLine);
 
             // Scroll to the bottom of the chat
             txtChat.SelectionStart = txtChat.Text.Length;
@@ -315,6 +376,15 @@ namespace ChatOn.View
             }
 
 
+        }
+
+        private void txtMsgDigitada_KeyPress(object sender, KeyPressEventArgs e)
+        {
+            if (e.KeyChar == (char)Keys.Enter)
+            {
+                e.Handled = true;
+                btnEnviarMsg.PerformClick();
+            }
         }
     }
 }

@@ -13,8 +13,8 @@ namespace ChatOn.Data
     {
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            //optionsBuilder.UseSqlServer("Data Source=localhost\\SQLEXPRESS; Initial Catalog=DBBiblioteca; Integrated Security=SSPI");
-            optionsBuilder.UseSqlServer("Data Source=LABFPC13; Initial Catalog=DBChatOn; User Id=sa; Password=Senh@123; TrustServerCertificate=true");
+            optionsBuilder.UseSqlServer("Data Source=localhost\\SQLEXPRESS; Initial Catalog=DBBiblioteca; Integrated Security=SSPI");
+            //optionsBuilder.UseSqlServer("Data Source=LABFPC13; Initial Catalog=DBChatOn; User Id=sa; Password=Senh@123; TrustServerCertificate=true");
         }
 
         public DbSet<Usuarios> Usuario { get; set; }

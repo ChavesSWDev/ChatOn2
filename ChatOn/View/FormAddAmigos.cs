@@ -174,7 +174,7 @@ namespace ChatOn.View
 
                 // Optional: Show a message to indicate that the friend request was sent
                 MessageBox.Show($"Pedido de amizade enviado para {email}.");
-
+                user.PedidoAmizade.Add(user);
                 // Clear the text box
                 txtEnviarPedidoAmigo.Text = string.Empty;
             }
@@ -189,6 +189,46 @@ namespace ChatOn.View
             // Check if the user is already a friend of the logged-in user
             Usuarios loggedUser = UsuarioController.Context.Usuario.FirstOrDefault(u => u.Login == loginUserLogado);
             return loggedUser.Amigos.Contains(user);
+        }
+
+        private void btnNegarAmizade_Click(object sender, EventArgs e)
+        {
+            string txtEmailNegar = txtAceitarNegarAmizade.Text;
+
+            // Find the logged-in user
+            Usuarios loggedUser = UsuarioController.Context.Usuario
+                .Include(u => u.PedidoAmizade) // Include PedidoAmizade navigation property
+                .FirstOrDefault(u => u.Login == loginUserLogado);
+
+            if (loggedUser != null)
+            {
+                // Find the friend request user with the specified email
+                Usuarios friendRequestUser = loggedUser.PedidoAmizade.FirstOrDefault(u => u.Email == txtEmailNegar);
+
+                if (friendRequestUser != null)
+                {
+                    // Remove the friend request user from the PedidoAmizade list of the logged-in user
+                    loggedUser.PedidoAmizade.Remove(friendRequestUser);
+
+                    // Save changes to the database
+                    UsuarioController.Context.SaveChanges();
+
+                    // Remove the friend request user from the listBoxUsersDataBase ListBox
+                    listBoxUsersDataBase.Items.Remove(txtEmailNegar);
+                    // Clear the text in txtAceitarNegarAmizade TextBox
+                    txtAceitarNegarAmizade.Clear();
+
+                    MessageBox.Show("Convite de amizade negado com sucesso!");
+
+                    Refresh();
+                    // Refresh the friend requests list
+                    ShowFriendRequests();
+                }
+                else
+                {
+                    MessageBox.Show("Usuário não encontrado na lista de pedidos de amizade.");
+                }
+            }
         }
 
         private void btnAceitarAmizade_Click(object sender, EventArgs e)
@@ -251,5 +291,24 @@ namespace ChatOn.View
                 parentForm.AddFormLogado();
             }
         }
+
+        private void listBoxUsersDataBase_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // Get the selected item from the listBoxUsersDataBase ListBox
+            string selectedItem = listBoxUsersDataBase.SelectedItem?.ToString();
+
+            // Update the txtEnviarPedidoAmigo TextBox with the selected item's text
+            txtEnviarPedidoAmigo.Text = selectedItem;
+        }
+
+        private void listBoxPedidosAmizade_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            string selectedItem = listBoxPedidosAmizade.SelectedItem?.ToString();
+
+            // Update the txtEnviarPedidoAmigo TextBox with the selected item's text
+            txtAceitarNegarAmizade.Text = selectedItem;
+        }
+
+
     }
 }
