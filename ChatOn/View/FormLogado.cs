@@ -146,7 +146,7 @@ namespace ChatOn.View
 
             // Add the tableLayout to the panelAmigos
             panelAmigos.Controls.Add(tableLayout);
-
+            PictureBox picBoxImgAmigo = new PictureBox();
             // Set the image and username
             byte[] imageData = friend.ImagemPerfil;
             if (imageData != null && imageData.Length > 0)
@@ -154,7 +154,6 @@ namespace ChatOn.View
                 using (MemoryStream ms = new MemoryStream(imageData))
                 {
                     Image profileImage = Image.FromStream(ms);
-                    PictureBox picBoxImgAmigo = new PictureBox();
                     picBoxImgAmigo.SizeMode = PictureBoxSizeMode.StretchImage;
                     picBoxImgAmigo.Image = profileImage;
                     picBoxImgAmigo.Size = new Size(57, 57);
@@ -168,6 +167,16 @@ namespace ChatOn.View
             lblNomeAmigo.TextAlign = ContentAlignment.MiddleLeft;
             tableLayout.Controls.Add(lblNomeAmigo, 1, 0);
             tableLayout.Cursor = Cursors.Hand;
+
+            picBoxImgAmigo.Click += (sender, e) =>
+            {
+                OpenChatWithFriend(friend, lblNomeAmigo);
+            };
+
+            lblNomeAmigo.Click += (sender, e) =>
+            {
+                OpenChatWithFriend(friend, lblNomeAmigo);
+            };
 
             tableLayout.Click += (sender, e) =>
             {
@@ -192,8 +201,36 @@ namespace ChatOn.View
                 btnEnviarMsg.Enabled = true;
                 txtMsgDigitada.Enabled = true;
                 txtChat.Visible = true;
+                txtMsgDigitada.Focus();
                 RefreshFriendList();
             };
+        }
+
+        private void OpenChatWithFriend(Usuarios friend, Label lblNomeAmigo)
+        {
+            // Store the selected user
+            selectedUser = friend;
+            lblNomeAmigo.Text = friend.NomeUsuario;
+            friend.HasUnreadMessages = false;
+
+            // Open the chat between the logged-in user and the selected user
+            currentChat = UsuarioController.GetChat(usuario, selectedUser);
+
+            // Update the txtChat with the new chat
+            StringBuilder chatLog = new StringBuilder();
+            foreach (Message message in currentChat.Messages)
+            {
+                chatLog.AppendLine($"{message.Sender.NomeUsuario}: {message.Content}");
+            }
+            txtChat.Text = chatLog.ToString();
+
+            // Update the lblChatComQuem text to the selected user's username
+            lblChatComQuem.Text = selectedUser.NomeUsuario;
+            btnEnviarMsg.Enabled = true;
+            txtMsgDigitada.Enabled = true;
+            txtChat.Visible = true;
+            txtMsgDigitada.Focus();
+            RefreshFriendList();
         }
 
         private void RefreshFriendList()
@@ -259,7 +296,7 @@ namespace ChatOn.View
                 chatLog.AppendLine(senderName + ": " + message.Content + " [" + message.Timestamp.ToString("HH:mm:ss") + "]");
 
                 // Add a newline if it's not the last message
-                if (i < currentChat.Messages.Count - 1)
+                if (i < currentChat.Messages.Count)
                 {
                     chatLog.AppendLine();
                 }
@@ -318,7 +355,7 @@ namespace ChatOn.View
             UsuarioController.SaveChat(chat);
 
             // Update the txtChat with the new message
-            txtChat.AppendText("Eu" + ":" + message + " [" + newMessage.Timestamp.ToString("HH:mm:ss") + "] " + Environment.NewLine);
+            txtChat.AppendText("Eu" + ": " + message + " [" + newMessage.Timestamp.ToString("HH:mm:ss") + "] ");
 
             // Scroll to the bottom of the chat
             txtChat.SelectionStart = txtChat.Text.Length;

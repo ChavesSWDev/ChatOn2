@@ -292,14 +292,7 @@ namespace ChatOn.View
             }
         }
 
-        private void listBoxUsersDataBase_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            // Get the selected item from the listBoxUsersDataBase ListBox
-            string selectedItem = listBoxUsersDataBase.SelectedItem?.ToString();
-
-            // Update the txtEnviarPedidoAmigo TextBox with the selected item's text
-            txtEnviarPedidoAmigo.Text = selectedItem;
-        }
+        
 
         private void listBoxPedidosAmizade_SelectedIndexChanged(object sender, EventArgs e)
         {
@@ -309,6 +302,13 @@ namespace ChatOn.View
             txtAceitarNegarAmizade.Text = selectedItem;
         }
 
+        private void listBoxUsersDataBase_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            // Get the selected item from the listBoxUsersDataBase ListBox
+            string selectedItem = listBoxUsersDataBase.SelectedItem?.ToString();
 
+            // Update the txtEnviarPedidoAmigo TextBox with the selected item's text
+            txtEnviarPedidoAmigo.Text = selectedItem;
+        }
     }
 }

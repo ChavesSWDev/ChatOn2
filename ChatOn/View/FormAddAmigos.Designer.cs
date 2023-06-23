@@ -28,7 +28,6 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(FormAddAmigos));
             this.listBoxUsersDataBase = new System.Windows.Forms.ListBox();
             this.panel1 = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
@@ -57,6 +56,7 @@
             this.listBoxUsersDataBase.Name = "listBoxUsersDataBase";
             this.listBoxUsersDataBase.Size = new System.Drawing.Size(230, 319);
             this.listBoxUsersDataBase.TabIndex = 0;
+            this.listBoxUsersDataBase.SelectedIndexChanged += new System.EventHandler(this.listBoxUsersDataBase_SelectedIndexChanged);
             // 
             // panel1
             // 
@@ -155,6 +155,7 @@
             this.listBoxPedidosAmizade.Name = "listBoxPedidosAmizade";
             this.listBoxPedidosAmizade.Size = new System.Drawing.Size(230, 319);
             this.listBoxPedidosAmizade.TabIndex = 0;
+            this.listBoxPedidosAmizade.SelectedIndexChanged += new System.EventHandler(this.listBoxPedidosAmizade_SelectedIndexChanged);
             // 
             // btnAceitarAmizade
             // 
@@ -212,7 +213,6 @@
             this.Controls.Add(this.txtEnviarPedidoAmigo);
             this.Controls.Add(this.label2);
             this.Controls.Add(this.panel1);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "FormAddAmigos";
             this.Text = "Adicionar amigos";
             this.Load += new System.EventHandler(this.FormAddAmigos_Load);

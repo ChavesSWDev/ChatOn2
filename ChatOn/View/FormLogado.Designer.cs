@@ -87,6 +87,7 @@
             this.txtMsgDigitada.PlaceholderText = "Digite alguma coisa aqui...";
             this.txtMsgDigitada.Size = new System.Drawing.Size(441, 57);
             this.txtMsgDigitada.TabIndex = 0;
+            this.txtMsgDigitada.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.txtMsgDigitada_KeyPress);
             // 
             // panel2
             // 

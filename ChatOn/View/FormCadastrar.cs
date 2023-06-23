@@ -138,7 +138,7 @@ namespace ChatOn.View
             else
             {
                 //string defaultImagePath = @"Y:\TomanoNoturnoADS\Dev Sistemas - Tiago\ChatOn2-master\ChatOn\Images\defaultUserImg.png";
-                string defaultImagePath = @"C:\Users\Renan\Desktop\projetoTiago\ChatOn2-master\ChatOn\Images\defaultUserImg.png";
+                string defaultImagePath = @"C:\Users\Renan\Desktop\projetoTiago\ChatOn\Images\defaultUserImg.png";
 
                 // Get the full path to the default image
                 string fullPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, defaultImagePath);
