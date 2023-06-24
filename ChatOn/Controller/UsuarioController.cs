@@ -54,11 +54,11 @@ namespace ChatOn.Controller
 
         internal static void AtualizarNome(string login, string novoNome)
         {
-            // Find the user with the provided login
+            // Encontre o usuário com o login fornecido
             Usuarios usuario = Context.Usuario.FirstOrDefault(u => u.Login == login);
             if (usuario != null)
             {
-                // Update the user's name
+                //Atualize o nome do usuário
                 usuario.NomeUsuario = novoNome;
                 Context.SaveChanges();
             }
@@ -111,7 +111,7 @@ namespace ChatOn.Controller
 
         internal static void EnviarPedidoAmizade(string senderEmail, string recipientEmail)
         {
-            // Find the sender and recipient users in the database
+            // Encontre os usuários remetentes e destinatários no banco de dados
             Usuarios sender = Context.Usuario.FirstOrDefault(u => u.Email == senderEmail);
             Usuarios recipient = Context.Usuario.FirstOrDefault(u => u.Email == recipientEmail);
 
@@ -125,24 +125,24 @@ namespace ChatOn.Controller
                 throw new Exception("Destinatário não encontrado");
             }
 
-            // Add the sender to the PedidoAmizade list of the recipient
+            //Adicionar o remetente à lista PedidoAmizade do destinatário
             recipient.PedidoAmizade.Add(sender);
 
-            // Save changes to the database
+            // Salvar alterações no banco de dados
             Context.SaveChanges();
         }
 
         internal static List<Usuarios> GetFriendList(int userId)
         {
-            // Retrieve the logged-in user
+            // Recupere o usuário logado
             Usuarios loggedUser = Context.Usuario
-                .Include(u => u.Amigos) // Include the Amigos navigation property
-                    .ThenInclude(a => a.Amigos) // Include the Amigos' Amigos navigation property
+                .Include(u => u.Amigos) // Incluir a propriedade de navegação Amigos
+                    .ThenInclude(a => a.Amigos) // Incluir a propriedade de navegação Amigos dos Amigos
                 .FirstOrDefault(u => u.Id == userId);
 
             if (loggedUser != null)
             {
-                // Return the list of friends
+                // Retornar a lista de amigos
                 return loggedUser.Amigos.ToList();
             }
             else

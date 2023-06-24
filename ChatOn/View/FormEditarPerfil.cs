@@ -43,7 +43,7 @@ namespace ChatOn.View
             {
                 using (MemoryStream ms = new MemoryStream(imageData))
                 {
-                    // Set the PictureBox's image from the loaded image data
+                    // Defina a imagem do PictureBox a partir dos dados de imagem carregados
                     imgPerfil.Image = Image.FromStream(ms);
                     imgPerfil.BackgroundImageLayout = ImageLayout.Stretch;
                 }
@@ -87,11 +87,11 @@ namespace ChatOn.View
 
         private void UpdatePanelControlsColors(Color selectedColor, Color selectedColor2)
         {
-            // Update the background colors of controls within the panel
+            // Atualize as cores de fundo dos controles no painel
             foreach (Control control in parentForm.SplitContainer1.Panel2.Controls)
             {
                 control.BackColor = selectedColor2;
-                // Update other properties like ForeColor, etc., if needed
+                // Atualize outras propriedades como ForeColor, etc., se necessário
             }
         }
         private void FormEditarPerfil_Load(object sender, EventArgs e)
@@ -105,24 +105,24 @@ namespace ChatOn.View
 
         private void LoadAndResizeUserImage()
         {
-            // Load the user's image data from the database
+            // Carregue os dados de imagem do usuário do banco de dados
             byte[] imageData = UsuarioController.GetImagem(loginUserLogado);
 
             if (imageData != null)
             {
-                // Create a MemoryStream from the image data
+                // Crie um MemoryStream a partir dos dados da imagem
                 using (MemoryStream ms = new MemoryStream(imageData))
                 {
-                    // Load the image from the MemoryStream
+                    // Carregar a imagem do MemoryStream
                     Image userImage = Image.FromStream(ms);
 
-                    // Resize the image to fit the PictureBox
+                    // redimensionar a imagem para caber no PictureBox
                     Image resizedImage = ResizeImage(userImage, imgPerfil.Width, imgPerfil.Height);
 
-                    // Set the resized image as the PictureBox image
+                    // Defina a imagem redimensionada como a imagem PictureBox
                     imgPerfil.Image = resizedImage;
 
-                    // Set the BackgroundImageLayout property to Stretch
+                    // Defina a propriedade BackgroundImageLayout como Stretch
                     imgPerfil.BackgroundImageLayout = ImageLayout.Stretch;
                 }
             }
@@ -130,10 +130,10 @@ namespace ChatOn.View
 
         private Image ResizeImage(Image image, int width, int height)
         {
-            // Calculate the aspect ratio
+            // Calcular a proporção
             double aspectRatio = (double)image.Width / image.Height;
 
-            // Calculate the new width and height based on the aspect ratio
+            // Calcule a nova largura e altura com base na proporção
             int newWidth = width;
             int newHeight = height;
 
@@ -146,21 +146,21 @@ namespace ChatOn.View
                 newHeight = (int)(width / aspectRatio);
             }
 
-            // Create a new Bitmap with the specified width and height
+            // Crie um novo Bitmap com a largura e altura especificadas
             Bitmap resizedBitmap = new Bitmap(newWidth, newHeight);
 
-            // Set the resolution of the new bitmap to match the original image
+            // Defina a resolução do novo bitmap para corresponder à imagem original
             resizedBitmap.SetResolution(image.HorizontalResolution, image.VerticalResolution);
 
-            // Create a Graphics object from the resized bitmap
+            //Crie um objeto Graphics a partir do bitmap redimensionado
             using (Graphics graphics = Graphics.FromImage(resizedBitmap))
             {
-                // Configure the Graphics object for high-quality rendering
+                // Configure o objeto Graphics para renderização de alta qualidade
                 graphics.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
                 graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
                 graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
 
-                // Draw the original image onto the resized bitmap
+                // Desenhe a imagem original no bitmap redimensionado
                 graphics.DrawImage(image, 0, 0, newWidth, newHeight);
             }
 
@@ -186,13 +186,13 @@ namespace ChatOn.View
 
                 lblNomeUserLogado.Text = novoNome;
 
-                // Refresh the MainForm label
+                // Atualizar o rótulo MainForm
                 if (parentForm != null)
                 {
                     parentForm.UpdateUserNameLabel(novoNome);
                 }
 
-                // Refresh the SplitContainer1.Panel1
+                // Atualize o SplitContainer1.Panel1
                 if (parentForm != null && parentForm.SplitContainer1.Panel1.Controls.Count > 0)
                 {
                     Control[] controls = parentForm.SplitContainer1.Panel1.Controls.Find("lblUserName", true);
@@ -217,9 +217,9 @@ namespace ChatOn.View
 
             try
             {
-                string senhaCriptografada = CriptografarSenha(novaSenha); // Encrypt the new password
+                string senhaCriptografada = CriptografarSenha(novaSenha); // Criptografar a nova senha
 
-                UsuarioController.AtualizarSenha(loginUserLogado, senhaCriptografada); // Save the encrypted password in the database
+                UsuarioController.AtualizarSenha(loginUserLogado, senhaCriptografada); // Salve a senha criptografada no banco de dados
 
                 MessageBox.Show("Senha atualizada com sucesso!");
 
@@ -250,39 +250,39 @@ namespace ChatOn.View
 
         private void imgPerfil_Click(object sender, EventArgs e)
         {
-            // Create and configure the OpenFileDialog
+            // Crie e configure o OpenFileDialog
             OpenFileDialog openFileDialog = new OpenFileDialog();
             openFileDialog.Filter = "Image Files|*.jpg;*.jpeg;*.png;*.gif;*.bmp";
             openFileDialog.Title = "Select an Image";
 
-            // Show the dialog and check if the user clicked OK
+            //Mostre a caixa de diálogo e verifique se o usuário clicou em OK
             if (openFileDialog.ShowDialog() == DialogResult.OK)
             {
-                // Get the selected image file path
+                // Obtenha o caminho do arquivo de imagem selecionado
                 string imagePath = openFileDialog.FileName;
 
                 try
                 {
-                    // Load the image
+                    // Carregar a imagem
                     Image selectedImage = Image.FromFile(imagePath);
 
-                    // Resize the image to fit the PictureBox
+                    // Redimensione a imagem para caber no PictureBox
                     Image resizedImage = new Bitmap(imgPerfil.Width, imgPerfil.Height);
                     using (Graphics graphics = Graphics.FromImage(resizedImage))
                     {
                         graphics.DrawImage(selectedImage, 0, 0, imgPerfil.Width, imgPerfil.Height);
                     }
 
-                    // Set the resized image as the PictureBox image
+                    // Defina a imagem redimensionada como a imagem PictureBox
                     imgPerfil.Image = resizedImage;
 
-                    // Set the BackgroundImageLayout property to Stretch
+                    // Defina a propriedade BackgroundImageLayout como Stretch
                     imgPerfil.BackgroundImageLayout = ImageLayout.Stretch;
 
                     // Convert the image to a byte array
                     byte[] imageData = ImageToByteArray(resizedImage);
 
-                    // Save the image in the database using the UsuarioController
+                    // Salve a imagem no banco de dados usando o UsuarioController
                     UsuarioController.SalvarImagem(loginUserLogado, imageData);
                 }
                 catch (Exception ex)
@@ -294,18 +294,18 @@ namespace ChatOn.View
 
         private void btnSalvarImagem_Click(object sender, EventArgs e)
         {
-            // Check if an image is currently set in the PictureBox
+            // Verifique se uma imagem está definida no PictureBox
             if (imgPerfil.Image != null)
             {
-                // Get the current image from the PictureBox
+                // Obtenha a imagem atual do PictureBox
                 Image currentImage = imgPerfil.Image;
 
-                // Convert the image to a byte array
+                // Converter a imagem em uma matriz de bytes
                 byte[] imageData = ImageToByteArray(currentImage);
 
                 try
                 {
-                    // Save the image data in the database using the UsuarioController
+                    // Salve os dados da imagem no banco de dados usando o UsuarioController
                     UsuarioController.SalvarImagem(loginUserLogado, imageData);
 
                     MessageBox.Show("Imagem salva com sucesso!");
@@ -324,10 +324,10 @@ namespace ChatOn.View
 
         private void UpdateProfileImage(Image image)
         {
-            // Set the image in the current form
+            // Definir a imagem no formulário atual
             imgPerfil.Image = image;
 
-            // Set the image in the parent form
+            // Definir a imagem no formulário pai
             parentForm.SetProfileImage(image);
         }
 
@@ -335,7 +335,7 @@ namespace ChatOn.View
         {
             using (MemoryStream ms = new MemoryStream())
             {
-                // Specify the image format as JPEG
+                // Especifique o formato da imagem como JPEG
                 image.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
                 return ms.ToArray();
             }

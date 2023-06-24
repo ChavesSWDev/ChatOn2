@@ -53,11 +53,11 @@ namespace ChatOn.View
 
         private void UpdatePanelControlsColors(Color selectedColor, Color selectedColor2)
         {
-            // Update the background colors of controls within the panel
+            // Atualize as cores de fundo dos controles no painel
             foreach (Control control in parentForm.SplitContainer1.Panel2.Controls)
             {
                 control.BackColor = selectedColor2;
-                // Update other properties like ForeColor, etc., if needed
+                //Atualize outras propriedades como ForeColor, etc., se necessário
             }
         }
 
@@ -75,21 +75,21 @@ namespace ChatOn.View
 
         private void ShowFriendRequests()
         {
-            // Find the logged-in user
+            // encontre o usuário logado
             Usuarios loggedUser = UsuarioController.Context.Usuario
-                .Include(u => u.PedidoAmizade) // Include PedidoAmizade navigation property
-                .Include(u => u.Amigos) // Include Amigos navigation property
+                .Include(u => u.PedidoAmizade) // Incluir propriedade de navegação PedidoAmizade
+                .Include(u => u.Amigos) // Incluir propriedade de navegação Amigos
                 .FirstOrDefault(u => u.Login == loginUserLogado);
 
-            // Clear the existing items in listBoxPedidosAmizade
+            //Limpar os itens existentes em listBoxPedidosAmizade
             listBoxPedidosAmizade.Items.Clear();
 
-            // Check if the logged-in user has any pending friend requests
+            // Verifique se o usuário conectado tem alguma solicitação de amizade pendente
             if (loggedUser != null && loggedUser.PedidoAmizade.Count > 0)
             {
                 foreach (var friendRequestUser in loggedUser.PedidoAmizade)
                 {
-                    // Check if the friend request user is not already in the friend list
+                    // Verifique se o usuário da solicitação de amizade já não está na lista de amigos
                     if (!loggedUser.Amigos.Contains(friendRequestUser))
                     {
                         listBoxPedidosAmizade.Items.Add(friendRequestUser.Email);
@@ -104,7 +104,7 @@ namespace ChatOn.View
 
         private void LoadUsersFromDatabase()
         {
-            // Assuming you have a context object named "dbContext" to interact with your database
+            // Supondo que você tenha um objeto de contexto chamado "dbContext" para interagir com seu banco de dados
             using (var dbContext = new DataContext())
             {
                 usersList = UsuarioController.Context.Usuario.ToList();
@@ -113,20 +113,20 @@ namespace ChatOn.View
 
         private void PopulateListBox()
         {
-            // Clear the existing items in listBoxUsersDataBase
+            // Limpe os itens existentes em listBoxUsersDataBase
             listBoxUsersDataBase.Items.Clear();
 
-            // Get the logged-in user
+            //Obtenha o usuário logado
             Usuarios loggedUser = UsuarioController.Context.Usuario
-                .Include(u => u.Amigos) // Include Amigos navigation property
+                .Include(u => u.Amigos) //Incluir propriedade de navegação Amigos
                 .FirstOrDefault(u => u.Login == loginUserLogado);
 
             if (loggedUser != null)
             {
-                // Add the email addresses to listBoxUsersDataBase, excluding friends
+                // Adicione os endereços de e-mail a listBoxUsersDataBase, excluindo amigos
                 foreach (var user in usersList)
                 {
-                    // Check if the user is not the logged-in user and not already in the friend list
+                    // Verifique se o usuário não é o usuário logado e não está na lista de amigos
                     if (user.Login != loginUserLogado && !loggedUser.Amigos.Contains(user))
                     {
                         listBoxUsersDataBase.Items.Add(user.Email);
@@ -145,7 +145,7 @@ namespace ChatOn.View
 
             string email = txtEnviarPedidoAmigo.Text.Trim();
 
-            // Find the user with the matching email
+            // Encontre o usuário com o e-mail correspondente
             Usuarios user = usersList.FirstOrDefault(u => u.Email == email);
 
             if (user == null)
@@ -154,7 +154,7 @@ namespace ChatOn.View
                 return;
             }
 
-            // Check if the user is not the logged-in user
+            // Verifique se o usuário não é o usuário logado
             if (user.Login == loginUserLogado)
             {
                 MessageBox.Show("Você não pode enviar um pedido de amigo para si mesmo.");
@@ -169,13 +169,13 @@ namespace ChatOn.View
 
             try
             {
-                // Send the friend request
+                //Envie a solicitação de amizade
                 UsuarioController.EnviarPedidoAmizade(emailUserLogado, user.Email);
 
-                // Optional: Show a message to indicate that the friend request was sent
+                //Opcional: Mostrar uma mensagem para indicar que a solicitação de amizade foi enviada
                 MessageBox.Show($"Pedido de amizade enviado para {email}.");
                 user.PedidoAmizade.Add(user);
-                // Clear the text box
+                // Limpar a caixa de texto
                 txtEnviarPedidoAmigo.Text = string.Empty;
             }
             catch (Exception ex)
@@ -186,7 +186,7 @@ namespace ChatOn.View
 
         private bool IsFriend(Usuarios user)
         {
-            // Check if the user is already a friend of the logged-in user
+            // Verifique se o usuário já é amigo do usuário logado
             Usuarios loggedUser = UsuarioController.Context.Usuario.FirstOrDefault(u => u.Login == loginUserLogado);
             return loggedUser.Amigos.Contains(user);
         }
@@ -195,33 +195,33 @@ namespace ChatOn.View
         {
             string txtEmailNegar = txtAceitarNegarAmizade.Text;
 
-            // Find the logged-in user
+            // Encontre o usuário logado
             Usuarios loggedUser = UsuarioController.Context.Usuario
-                .Include(u => u.PedidoAmizade) // Include PedidoAmizade navigation property
+                .Include(u => u.PedidoAmizade) // Incluir propriedade de navegação PedidoAmizade
                 .FirstOrDefault(u => u.Login == loginUserLogado);
 
             if (loggedUser != null)
             {
-                // Find the friend request user with the specified email
+                // Encontre o usuário da solicitação de amizade com o e-mail especificado
                 Usuarios friendRequestUser = loggedUser.PedidoAmizade.FirstOrDefault(u => u.Email == txtEmailNegar);
 
                 if (friendRequestUser != null)
                 {
-                    // Remove the friend request user from the PedidoAmizade list of the logged-in user
+                    // Remover o usuário de solicitação de amizade da lista PedidoAmizade do usuário logado
                     loggedUser.PedidoAmizade.Remove(friendRequestUser);
 
-                    // Save changes to the database
+                    // salvar alterações no banco de dados
                     UsuarioController.Context.SaveChanges();
 
-                    // Remove the friend request user from the listBoxUsersDataBase ListBox
+                    // Remova o usuário de solicitação de amizade do listBoxUsersDataBase ListBox
                     listBoxUsersDataBase.Items.Remove(txtEmailNegar);
-                    // Clear the text in txtAceitarNegarAmizade TextBox
+                    //Limpe o texto em txtAceitarNegarAmizade TextBox
                     txtAceitarNegarAmizade.Clear();
 
                     MessageBox.Show("Convite de amizade negado com sucesso!");
 
                     Refresh();
-                    // Refresh the friend requests list
+                    // Atualize a lista de pedidos de amizade
                     ShowFriendRequests();
                 }
                 else
@@ -235,15 +235,15 @@ namespace ChatOn.View
         {
             string emailToAccept = txtAceitarNegarAmizade.Text;
 
-            // Find the logged-in user
+            // encontre o usuário logado
             Usuarios loggedUser = UsuarioController.Context.Usuario
-                .Include(u => u.PedidoAmizade) // Include PedidoAmizade navigation property
-                .Include(u => u.Amigos) // Include Amigos navigation property
+                .Include(u => u.PedidoAmizade) // Incluir propriedade de navegação PedidoAmizade
+                .Include(u => u.Amigos) //Incluir propriedade de navegação Amigos
                 .FirstOrDefault(u => u.Login == loginUserLogado);
 
             if (loggedUser != null)
             {
-                // Check if the user to accept is already a friend
+                // Verifique se o usuário a aceitar já é um amigo
                 Usuarios friendUser = loggedUser.Amigos.FirstOrDefault(u => u.Email == emailToAccept);
 
                 if (friendUser != null)
@@ -252,29 +252,29 @@ namespace ChatOn.View
                     return;
                 }
 
-                // Find the friend request user with the specified email
+                // Encontre o usuário da solicitação de amizade com o e-mail especificado
                 Usuarios friendRequestUser = loggedUser.PedidoAmizade.FirstOrDefault(u => u.Email == emailToAccept);
 
                 if (friendRequestUser != null)
                 {
-                    // Add the friend request user to the Amigos list of the logged-in user
+                    // Adicione o usuário de solicitação de amizade à lista de Amigos do usuário conectado
                     loggedUser.Amigos.Add(friendRequestUser);
 
-                    // Add the logged-in user to the Amigos list of the friend request user
+                    //Adicione o usuário conectado à lista de Amigos do usuário de solicitação de amizade
                     friendRequestUser.Amigos.Add(loggedUser);
 
-                    // Remove the friend request user from the PedidoAmizade list of the logged-in user
+                    // Remover o usuário de solicitação de amizade da lista PedidoAmizade do usuário logado
                     loggedUser.PedidoAmizade.Remove(friendRequestUser);
 
-                    // Remove the logged-in user from the PedidoAmizade list of the friend request user
+                    // Remova o usuário logado da lista PedidoAmizade do usuário de pedido de amizade
                     friendRequestUser.PedidoAmizade.Remove(loggedUser);
 
-                    // Save changes to the database
+                    //Salvar alterações no banco de dados
                     UsuarioController.Context.SaveChanges();
                     MessageBox.Show(friendRequestUser.Email + " foi adicionado.");
 
                     Refresh();
-                    // Refresh the friend requests list
+                    //Atualize a lista de pedidos de amizade
                     ShowFriendRequests();
                 }
                 else
@@ -298,16 +298,16 @@ namespace ChatOn.View
         {
             string selectedItem = listBoxPedidosAmizade.SelectedItem?.ToString();
 
-            // Update the txtEnviarPedidoAmigo TextBox with the selected item's text
+            // Atualize o TextBox txtEnviarPedidoAmigo com o texto do item selecionado
             txtAceitarNegarAmizade.Text = selectedItem;
         }
 
         private void listBoxUsersDataBase_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // Get the selected item from the listBoxUsersDataBase ListBox
+            //Obtenha o item selecionado do listBoxUsersDataBase ListBox
             string selectedItem = listBoxUsersDataBase.SelectedItem?.ToString();
 
-            // Update the txtEnviarPedidoAmigo TextBox with the selected item's text
+            // Atualize o TextBox txtEnviarPedidoAmigo com o texto do item selecionado
             txtEnviarPedidoAmigo.Text = selectedItem;
         }
     }

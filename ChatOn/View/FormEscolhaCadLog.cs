@@ -106,7 +106,7 @@ namespace ChatOn.View
                         using (MemoryStream ms = new MemoryStream(imageData))
                         {
                             Image image = Image.FromStream(ms);
-                            // Set the image in the parent form's PictureBox
+                            // Defina a imagem no PictureBox do formulário pai
                             parentForm.SetProfileImage(image);
 
                         }

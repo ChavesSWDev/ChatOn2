@@ -32,13 +32,13 @@ namespace ChatOn.Model
 
         public bool HasUnreadMessages { get; set; }
 
-        // Navigation property representing the friends of the user
+        // propriedade de navegação que representa os amigos do usuário
         public virtual ICollection<Usuarios> Amigos { get; set; }
 
-        // Navigation property representing the pending friend requests
+        // Propriedade de navegação que representa as solicitações de amizade pendentes
         public virtual ICollection<Usuarios> PedidoAmizade { get; set; }
 
-        // Navigation property representing the chats the user is involved in
+        // Propriedade de navegação que representa os chats em que o usuário está envolvido
         public virtual ICollection<Chat> Chats { get; set; }
 
         public Usuarios()
@@ -70,7 +70,7 @@ namespace ChatOn.Model
             Messages = new List<Message>();
         }
 
-        // Parameterless constructor for EF Core
+        // construtor sem parâmetros para EF Core
         protected Chat()
         {
             Messages = new List<Message>();

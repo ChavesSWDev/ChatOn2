@@ -38,7 +38,7 @@ namespace ChatOn.View
         {
             ColorsChanged?.Invoke(this, e);
 
-            // Call the method to update the colors in the child forms
+            // chama a função pra mudar a cor de tema
             UpdateChildFormColors();
         }
 
@@ -61,7 +61,7 @@ namespace ChatOn.View
                 }
                 else
                 {
-                    return null; // or return a default image if desired
+                    return null; 
                 }
             }
             set
@@ -91,7 +91,7 @@ namespace ChatOn.View
         public FormMenu()
         {
             InitializeComponent();
-            // Load the selected color from the stored settings
+            // Carrega as cores selecionadas para serem inseridas no menu esquerdo e direito do programa
             splitContainer1.Panel1.BackColor = SelectedColor;
             splitContainer1.Panel2.BackColor = SelectedColor2;
 
@@ -105,17 +105,16 @@ namespace ChatOn.View
             btnTemas.FlatAppearance.BorderSize = 0;
             btnIniciar.BackColor = TemaSettings.CorPrimaria;
 
-            // Hide or show the appropriate controls based on the selected color
-            // You can add more customization based on the selected color if needed
+            // Oculte ou mostre os controles apropriados com base na cor selecionada
             if (TemaSettings.CorPrimaria == Color.Yellow)
             {
-                // Hide the logo and show the user profile controls
+                // Oculte o logotipo e mostre os controles do perfil do usuário
                 picBoxLogo.Visible = false;
                 ShowButtons();
             }
             else
             {
-                // Show the logo and hide the user profile controls
+                // Mostrar o logotipo e ocultar os controles do perfil do usuário
                 picBoxLogo.Visible = true;
                 btnAddAmigos.Visible = false;
                 btnPerfil.Visible = false;
@@ -126,7 +125,9 @@ namespace ChatOn.View
         }
 
 
-
+        //isso foi feito para poder acessar dos outros formulários
+        //os controles do formulário principal, praticamente todo formulário
+        //deve fazer isso caso algum formulário usa dados do anterior
         public SplitContainer SplitContainer1
         {
             get { return splitContainer1; }
@@ -179,6 +180,7 @@ namespace ChatOn.View
 
         public Form activeForm = null;
 
+        //chama form para logar
         private void btnIniciar_Click(object sender, EventArgs e)
         {
             FormEscolhaCadLog formEscolhaCadLog = new FormEscolhaCadLog(this);
@@ -189,19 +191,19 @@ namespace ChatOn.View
             picBoxUserIMG.Visible = false;
             lblUserName.Visible = false;
         }
-
+        //chama o form editar perfil
         private void btnPerfil_Click(object sender, EventArgs e)
         {
             FormEditarPerfil formEditarPerfil = new FormEditarPerfil(this, FormEscolhaCadLog.loggedInUser.Login, FormEscolhaCadLog.loggedInUser.NomeUsuario, FormEscolhaCadLog.loggedInUser.Email, FormEscolhaCadLog.loggedInUser.Senha);//lblUserNameLogado
             openChildForm(formEditarPerfil);
         }
-
+        //chama form para add amigo
         private void btnAddAmigos_Click(object sender, EventArgs e)
         {
             FormAddAmigos formAddAmigos = new FormAddAmigos(this, FormEscolhaCadLog.loggedInUser.Login, FormEscolhaCadLog.loggedInUser.NomeUsuario, FormEscolhaCadLog.loggedInUser.Email, FormEscolhaCadLog.loggedInUser.Senha);
             openChildForm(formAddAmigos);
         }
-
+        //volta ao menu caso n tiver logado qnd clicar na logo do app
         private void picBoxLogo_Click(object sender, EventArgs e)
         {
             if (activeForm != null)
@@ -228,10 +230,10 @@ namespace ChatOn.View
 
         private Image ResizeImage(Image image, int width, int height)
         {
-            // Calculate the aspect ratio
+            // Calcular a proporção
             double aspectRatio = (double)image.Width / image.Height;
 
-            // Calculate the new width and height based on the aspect ratio
+            // Calcule a nova largura e altura com base na proporção
             int newWidth = width;
             int newHeight = height;
 
@@ -244,21 +246,21 @@ namespace ChatOn.View
                 newHeight = (int)(width / aspectRatio);
             }
 
-            // Create a new Bitmap with the specified width and height
+            // Crie um novo Bitmap com a largura e altura especificadas
             Bitmap resizedBitmap = new Bitmap(newWidth, newHeight);
 
-            // Set the resolution of the new bitmap to match the original image
+            // Defina a resolução do novo bitmap para corresponder à imagem original
             resizedBitmap.SetResolution(image.HorizontalResolution, image.VerticalResolution);
 
-            // Create a Graphics object from the resized bitmap
+            // Crie um objeto Graphics a partir do bitmap redimensionado
             using (Graphics graphics = Graphics.FromImage(resizedBitmap))
             {
-                // Configure the Graphics object for high-quality rendering
+                // Configure o objeto Graphics para renderização de alta qualidade
                 graphics.CompositingQuality = System.Drawing.Drawing2D.CompositingQuality.HighQuality;
                 graphics.InterpolationMode = System.Drawing.Drawing2D.InterpolationMode.HighQualityBicubic;
                 graphics.SmoothingMode = System.Drawing.Drawing2D.SmoothingMode.HighQuality;
 
-                // Draw the original image onto the resized bitmap
+                // Desenhe a imagem original no bitmap redimensionado
                 graphics.DrawImage(image, 0, 0, newWidth, newHeight);
             }
 
@@ -266,6 +268,7 @@ namespace ChatOn.View
         }
 
 
+        //essa função é para chamar todos os formulários no split container1 panel 2
         public void openChildForm(Form childForm)
         {
             if (activeForm != null)
@@ -282,20 +285,20 @@ namespace ChatOn.View
 
                 splitContainer1.Panel2.Controls.Clear();
 
-                // Subscribe to the color change event of the child forms
+                // Inscreva-se no evento de mudança de cor dos formulários filhos
                 if (childForm is FormLogado)
                 {
                     FormLogado formLogado = (FormLogado)childForm;
                     formLogado.parentForm = this;
                     formLogado.CorSecundaria = TemaSettings.CorSecundaria;
 
-                    // Hide the buttons in the parent form
+                    // Ocultar os botões no formulário pai
                     btnAddAmigos.Visible = true;
                     btnPerfil.Visible = true;
                 }
                 else
                 {
-                    // Show the buttons in the parent form
+                    // Mostrar os botões no formulário pai
                     btnAddAmigos.Visible = true;
                     btnPerfil.Visible = true;
                 }
@@ -308,6 +311,8 @@ namespace ChatOn.View
             }
         }
 
+        //essa função é para manter as cores de todos os formulários
+        //na cor selecionada do tema
         public void UpdateChildFormColors()
         {
             if (activeForm is FormEscolhaCadLog escolhaCadLogForm)
@@ -342,6 +347,8 @@ namespace ChatOn.View
             }
         }
 
+        //atualiza o nome de quem ta logado para aparecer debaixo da foto
+        //de perfil no menu da esquerda do programa
         public void UpdateUserNameLabel(string newUserName)
         {
             lblUserName.Text = newUserName;
@@ -369,6 +376,7 @@ namespace ChatOn.View
             splitContainer1.Panel2.Controls.SetChildIndex(btnIniciar, 0);
         }
 
+        //adiciona o form cadastrar no panel 2
         public void AddFormCadastrar()
         {
             FormCadastrar formCadastrar = new FormCadastrar(this);
@@ -384,6 +392,7 @@ namespace ChatOn.View
 
         }
 
+        //adiciona o form login no panel 2
         public void AddFormEscolhaCadLog()
         {
             FormEscolhaCadLog formEscolhaCadLog = new FormEscolhaCadLog(this);
@@ -399,6 +408,7 @@ namespace ChatOn.View
             formEscolhaCadLog.Refresh();
         }
 
+        //adiciona o form logado no panel 2
         public void AddFormLogado()
         {
             FormLogado formLogado = new FormLogado(this, FormEscolhaCadLog.loggedInUser);
@@ -417,24 +427,24 @@ namespace ChatOn.View
 
         private void btnDeslogar_Click(object sender, EventArgs e)
         {
-            // Show a confirmation message
+            // Mostra uma mensagem de confirmação
             var result = MessageBox.Show("Você tem certeza que quer deslogar?", "Logout Confirmation", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
 
             if (result == DialogResult.Yes)
             {
                 MessageBox.Show("Deslogando...");
-                // Close the currently active form (FormLogado)
+                // Fecha o form ativo (FormLogado)
                 if (activeForm != null)
                 {
                     activeForm.Close();
                     activeForm = null;
                 }
 
-                // Show the buttons and clear the panel in splitContainer1.Panel2
+                // Mostrar os botões e limpar o painel em splitContainer1.Panel2
                 ShowButtons();
                 splitContainer1.Panel2.Controls.Clear();
 
-                // Re-add the original controls (panel2 and btnIniciar) to splitContainer1.Panel2
+                // Adicione novamente os controles originais (panel2 e btnIniciar) a splitContainer1.Panel2
                 splitContainer1.Panel2.Controls.Add(panel2);
                 splitContainer1.Panel2.Controls.Add(btnIniciar);
                 splitContainer1.Panel1.Controls.Add(picBoxLogo);
@@ -457,7 +467,7 @@ namespace ChatOn.View
                 SelectedColor = colorSelector.SelectedColor;
                 SelectedColor2 = colorSelector.SelectedColor2;
 
-                // Update the primary and secondary colors
+                // Atualize as cores primárias e secundárias
                 TemaSettings.CorPrimaria = SelectedColor;
                 TemaSettings.CorSecundaria = SelectedColor2;
 
@@ -474,11 +484,11 @@ namespace ChatOn.View
                 }
                 btnIniciar.BackColor = TemaSettings.CorPrimaria;
 
-                // Update the background colors in the main form
+                // Atualize as cores de fundo no formulário principal
                 splitContainer1.Panel1.BackColor = TemaSettings.CorPrimaria;
                 splitContainer1.Panel2.BackColor = TemaSettings.CorSecundaria;
 
-                // Notify the child form (FormEscolhaCadLog) about the color change
+                //Notificar o formulário filho (FormEscolhaCadLog) sobre a mudança de cor
                 UpdateChildFormColors();
                 this.Refresh();
             }

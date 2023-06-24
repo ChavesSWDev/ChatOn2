@@ -128,7 +128,7 @@ namespace ChatOn.View
                 return;
             }
 
-            // Check if the friend is the logged-in user
+            // Verifique se o amigo é o usuário logado
             if (friend.Id == usuario.Id)
             {
                 return;
@@ -140,14 +140,14 @@ namespace ChatOn.View
             tableLayout.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 57));
             tableLayout.ColumnStyles.Add(new ColumnStyle(SizeType.AutoSize));
 
-            // Add the friend as a tag to the table layout
+            // Adicione o amigo como uma tag ao layout da mesa
             tableLayout.Tag = friend;
             tableLayout.BackColor = SystemColors.Control;
 
-            // Add the tableLayout to the panelAmigos
+            // Adicione o tableLayout ao painelAmigos
             panelAmigos.Controls.Add(tableLayout);
             PictureBox picBoxImgAmigo = new PictureBox();
-            // Set the image and username
+            // Defina a imagem e o nome de usuário
             byte[] imageData = friend.ImagemPerfil;
             if (imageData != null && imageData.Length > 0)
             {
@@ -180,15 +180,15 @@ namespace ChatOn.View
 
             tableLayout.Click += (sender, e) =>
             {
-                // Store the selected user
+                // Armazenar o usuário selecionado
                 selectedUser = friend;
                 lblNomeAmigo.Text = friend.NomeUsuario;
                 friend.HasUnreadMessages = false;
 
-                // Open the chat between the logged-in user and the selected user
+                // Abra o chat entre o usuário logado e o usuário selecionado
                 currentChat = UsuarioController.GetChat(usuario, selectedUser);
 
-                // Update the txtChat with the new chat
+                // Atualize o txtChat com o novo chat
                 StringBuilder chatLog = new StringBuilder();
                 foreach (Message message in currentChat.Messages)
                 {
@@ -196,7 +196,7 @@ namespace ChatOn.View
                 }
                 txtChat.Text = chatLog.ToString();
 
-                // Update the lblChatComQuem text to the selected user's username
+                //Atualize o texto lblChatComQuem para o nome de usuário do usuário selecionado
                 lblChatComQuem.Text = selectedUser.NomeUsuario;
                 btnEnviarMsg.Enabled = true;
                 txtMsgDigitada.Enabled = true;
@@ -208,15 +208,15 @@ namespace ChatOn.View
 
         private void OpenChatWithFriend(Usuarios friend, Label lblNomeAmigo)
         {
-            // Store the selected user
+            // Armazenar o usuário selecionado
             selectedUser = friend;
             lblNomeAmigo.Text = friend.NomeUsuario;
             friend.HasUnreadMessages = false;
 
-            // Open the chat between the logged-in user and the selected user
+            // Abra o chat entre o usuário logado e o usuário selecionado
             currentChat = UsuarioController.GetChat(usuario, selectedUser);
 
-            // Update the txtChat with the new chat
+            // Atualize o txtChat com o novo chat
             StringBuilder chatLog = new StringBuilder();
             foreach (Message message in currentChat.Messages)
             {
@@ -224,7 +224,7 @@ namespace ChatOn.View
             }
             txtChat.Text = chatLog.ToString();
 
-            // Update the lblChatComQuem text to the selected user's username
+            // Atualize o texto lblChatComQuem para o nome de usuário do usuário selecionado
             lblChatComQuem.Text = selectedUser.NomeUsuario;
             btnEnviarMsg.Enabled = true;
             txtMsgDigitada.Enabled = true;
@@ -246,10 +246,10 @@ namespace ChatOn.View
 
         private bool FriendRequestAccepted(Usuarios friend)
         {
-            // Find the logged-in user
+            // Encontre o usuário logado
             Usuarios loggedInUser = usersList.FirstOrDefault(u => u.Login == usuario.Login);
 
-            // Check if the friend request has been accepted by both users
+            // Verifique se a solicitação de amizade foi aceita por ambos os usuários
             bool isAccepted = loggedInUser?.Amigos.Any(u => u.Id == friend.Id) ?? false;
             bool isFriend = friend.Amigos.Any(u => u.Id == loggedInUser.Id);
 
@@ -263,22 +263,22 @@ namespace ChatOn.View
                 return;
             }
 
-            // Retrieve the latest chat data from the database
+            // Recupere os dados de bate-papo mais recentes do banco de dados
             Chat updatedChat = UsuarioController.GetChat(usuario, selectedUser);
 
-            // Store the previous message count
+            // armazenar a contagem de mensagens anterior
             int previousMessageCount = currentChat.Messages.Count;
 
-            // Update the current chat with the latest data
+            // Atualize o bate-papo atual com os dados mais recentes
             currentChat.Messages = updatedChat.Messages;
 
-            // Store the current scroll position
+            // Armazena a posição de rolagem atual
             int scrollPosition = txtChat.GetPositionFromCharIndex(txtChat.SelectionStart).Y;
 
-            // Determine if new messages have been added
+            // Determinar se novas mensagens foram adicionadas
             bool newMessagesAdded = currentChat.Messages.Count > previousMessageCount;
 
-            // Update the txtChat with the refreshed chat data
+            // Atualize o txtChat com os dados atualizados do chat
             StringBuilder chatLog = new StringBuilder();
             for (int i = 0; i < currentChat.Messages.Count; i++)
             {
@@ -295,7 +295,7 @@ namespace ChatOn.View
 
                 chatLog.AppendLine(senderName + ": " + message.Content + " [" + message.Timestamp.ToString("HH:mm:ss") + "]");
 
-                // Add a newline if it's not the last message
+                //Adicione uma nova linha se não for a última mensagem
                 if (i < currentChat.Messages.Count)
                 {
                     chatLog.AppendLine();
@@ -305,14 +305,14 @@ namespace ChatOn.View
 
 
 
-            // Update the text of the txtChat
+            // Atualize o texto do txtChat
             txtChat.Text = newText;
 
-            // Scroll to the bottom if new messages have been added
+            // Role até o final se novas mensagens foram adicionadas
             if (newMessagesAdded && friendList.Contains(selectedUser))
             {
                 selectedUser.HasUnreadMessages = true;
-                RefreshFriendList(); // Update the friend list display
+                RefreshFriendList(); // Atualize a exibição da lista de amigos
                 txtChat.SelectionStart = txtChat.Text.Length;
                 txtChat.ScrollToCaret();
             }
@@ -334,13 +334,13 @@ namespace ChatOn.View
                 return;
             }
 
-            // Retrieve the logged-in user
+            // Recupere o usuário logado
             Usuarios loggedUser = usuario;
 
-            // Get or create the chat between the logged-in user and the selected user
+            // Obtenha ou crie o chat entre o usuário logado e o usuário selecionado
             Chat chat = UsuarioController.GetChat(loggedUser, selectedUser);
 
-            // Create a new message
+            //Criar uma nova mensagem
             Message newMessage = new Message()
             {
                 Sender = loggedUser,
@@ -348,16 +348,16 @@ namespace ChatOn.View
                 Timestamp = DateTime.Now
             };
 
-            // Add the message to the chat
+            // Adicione a mensagem ao chat
             chat.Messages.Add(newMessage);
 
-            // Save the chat in the database
+            // Salve o chat no banco de dados
             UsuarioController.SaveChat(chat);
 
-            // Update the txtChat with the new message
+            // Atualize o txtChat com a nova mensagem
             txtChat.AppendText("Eu" + ": " + message + " [" + newMessage.Timestamp.ToString("HH:mm:ss") + "] ");
 
-            // Scroll to the bottom of the chat
+            // Role até a parte inferior do bate-papo
             txtChat.SelectionStart = txtChat.Text.Length;
             txtChat.ScrollToCaret();
 
@@ -382,11 +382,11 @@ namespace ChatOn.View
 
         private void UpdatePanelControlsColors(Color selectedColor, Color selectedColor2)
         {
-            // Update the background colors of controls within the panel
+            // Atualize as cores de fundo dos controles no painel
             foreach (Control control in parentForm.SplitContainer1.Panel2.Controls)
             {
                 control.BackColor = selectedColor2;
-                // Update other properties like ForeColor, etc., if needed
+                //Atualize outras propriedades como ForeColor, etc., se necessário
             }
         }
 

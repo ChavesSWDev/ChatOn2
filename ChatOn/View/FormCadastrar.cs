@@ -73,11 +73,11 @@ namespace ChatOn.View
 
         private void UpdatePanelControlsColors(Color selectedColor, Color selectedColor2)
         {
-            // Update the background colors of controls within the panel
+            // Atualize as cores de fundo dos controles no painel
             foreach (Control control in formMenu.SplitContainer1.Panel2.Controls)
             {
                 control.BackColor = selectedColor2;
-                // Update other properties like ForeColor, etc., if needed
+                // Atualize outras propriedades como ForeColor, etc., se necessário
             }
         }
 
@@ -120,15 +120,15 @@ namespace ChatOn.View
             novoUser.Senha = CriptografarSenha(txtSenha.Text.Trim());
             novoUser.NomeUsuario = txtUsername.Text.Trim();
 
-            // Retrieve the image from the PictureBox in the MainForm
+            // Recupere a imagem do PictureBox no MainForm
             Image userImage = formMenu.UserImage.Image;
 
             if (userImage != null)
             {
-                // Resize the image to match the size of the PictureBox with stretch effect
+                // Redimensione a imagem para corresponder ao tamanho do PictureBox com efeito de alongamento
                 Image resizedImage = ResizeImage(userImage, formMenu.UserImage.Size);
 
-                // Convert the resized image to a byte array
+                // Converta a imagem redimensionada em uma matriz de bytes
                 using (MemoryStream ms = new MemoryStream())
                 {
                     resizedImage.Save(ms, System.Drawing.Imaging.ImageFormat.Jpeg);
@@ -137,10 +137,10 @@ namespace ChatOn.View
             }
             else
             {
-                //string defaultImagePath = @"Y:\TomanoNoturnoADS\Dev Sistemas - Tiago\ChatOn2-master\ChatOn\Images\defaultUserImg.png";
-                string defaultImagePath = @"C:\Users\Renan\Desktop\projetoTiago\ChatOn\Images\defaultUserImg.png";
+                string defaultImagePath = @"Y:\TomanoNoturnoADS\Dev Sistemas - Tiago\ChatOn2-master\ChatOn\Images\defaultUserImg.png";
+                
 
-                // Get the full path to the default image
+                // Obtenha o caminho completo para a imagem padrão
                 string fullPath = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, defaultImagePath);
 
                 if (File.Exists(fullPath))
@@ -156,7 +156,7 @@ namespace ChatOn.View
                 }
                 else
                 {
-                    // Default image file not found
+                    //Arquivo de imagem padrão não encontrado
                     MessageBox.Show("Default user image not found.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
                     return;
                 }
@@ -165,7 +165,7 @@ namespace ChatOn.View
             errorProvider1.Clear();
             bool erros = false;
 
-            // Validate the user input
+            //Valide a entrada do usuário
             if (novoUser.Login == "")
             {
                 errorProvider1.SetError(txtUsername, "Username inválido!");

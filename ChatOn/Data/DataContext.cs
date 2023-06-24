@@ -19,7 +19,7 @@ namespace ChatOn.Data
 
         public DbSet<Usuarios> Usuario { get; set; }
         public DbSet<Chat> Chat { get; set; }
-        public DbSet<Message> Message { get; set; } // Add this line to include the Message entity
+        public DbSet<Message> Message { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
